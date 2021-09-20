@@ -1,0 +1,44 @@
+version: "3.5"
+services:
+  web:
+    build:
+      context: .
+    env_file: ./.env
+    command: npm start
+    volumes: 
+      - .:/app/
+      - /app/node_modules
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    depends_on: 
+      - mysqldb
+    environment: 
+      MYSQL_HOST: localhost
+  mysqldb:
+    image: mysql:latest
+    env_file: ./.env
+    environment: 
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    volumes:
+      - mysql:/var/lib/mysql
+      - mysql_config:/etc/mysql
+  # phpmyadmin:
+  #   container_name: phpmyadmin
+  #   depends_on:
+  #     - mysql
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   restart: always
+  #   networks:
+  #     - docker-test
+  #   ports:
+  #     - 8080:80
+  #   environment:
+  #     PMA_HOST: $PMA_HOST
+  #     PMA_USER: $PMA_USER
+  #     PMA_PASSWORD: $PMA_PASSWORD
+volumes:
+    mysql:
+    mysql_config:
